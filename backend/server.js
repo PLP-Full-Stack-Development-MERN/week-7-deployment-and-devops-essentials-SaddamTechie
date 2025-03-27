@@ -113,7 +113,7 @@ app.delete('/api/blogs/:id', auth, async (req, res) => {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ error: 'Blog not found' });
     if (blog.userId.toString() !== req.user.id) return res.status(403).json({ error: 'Unauthorized' });
-    await blog.remove();
+    await Blog.deleteOne({ _id: req.params.id });
     res.json({ message: 'Blog deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });

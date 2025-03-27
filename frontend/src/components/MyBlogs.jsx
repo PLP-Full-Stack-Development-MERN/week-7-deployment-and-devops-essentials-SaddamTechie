@@ -6,9 +6,7 @@ function MyBlogs() {
   const [blogs, setBlogs] = useState([]);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const API_URL = 'http://127.0.0.1:5000/api/blogs/api/my-blogs';
-
-
+  const API_URL = 'http://127.0.0.1:5000/api/my-blogs';
 
   useEffect(() => {
     if (!token) {
@@ -20,11 +18,13 @@ function MyBlogs() {
       .catch(err => console.error(err));
   }, [token, navigate]);
 
-  // Function to truncate content to 100 characters and add ellipsis
-  const truncateContent = (content, maxLength = 100) => {
-    if (content.length <= maxLength) return content;
-    return content.substring(0, maxLength) + '...';
-  }
+  // Function to get first 100 words and add ellipsis (improved from character count)
+  const getPreview = (content) => {
+    const plainText = content.replace(/<[^>]+>/g, ''); // Remove HTML tags
+    const words = plainText.split(/\s+/).filter(word => word.length > 0);
+    const previewWords = words.slice(0, 100);
+    return previewWords.length < words.length ? `${previewWords.join(' ')}...` : previewWords.join(' ');
+  };
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this blog?')) {
@@ -32,6 +32,7 @@ function MyBlogs() {
         await axios.delete(`http://127.0.0.1:5000/api/blogs/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        alert('Done')
         setBlogs(blogs.filter(blog => blog._id !== id));
       } catch (err) {
         console.error(err);
@@ -42,28 +43,51 @@ function MyBlogs() {
   if (!token) return null; // Redirected to /auth
 
   return (
-    <div>
-      <h1 className='text-red-100'>My Blogs</h1>
-      {blogs.length === 0 ? (
-        <p>You haven’t written any blogs yet.</p>
-      ) : (
-        blogs.map(blog => (
-          <div key={blog._id} style={{ border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}>
-            <h3>{blog.title}</h3>
-            <p style={{ margin: '0 0 10px 0', color: '#666' }}>
-              {truncateContent(blog.content)}
-            </p>
-            <p><em>Created on {new Date(blog.createdAt).toLocaleDateString()}</em></p>
+    <div className="min-h-screen bg-gray-100 py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">My Blogs</h1>
+
+        {blogs.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <p className="text-gray-600">You haven’t written any blogs yet.</p>
             <button
-              onClick={() => navigate(`/edit/${blog._id}`)}
-              style={{ marginRight: '10px' }}
+              onClick={() => navigate('/create')}
+              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
             >
-              Edit
+              Create Your First Blog
             </button>
-            <button onClick={() => handleDelete(blog._id)}>Delete</button>
           </div>
-        ))
-      )}
+        ) : (
+          <div className="space-y-6">
+            {blogs.map(blog => (
+              <div
+                key={blog._id}
+                className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-150 ease-in-out"
+              >
+                <h3 className="text-xl font-semibold text-gray-900">{blog.title}</h3>
+                <p className="text-gray-700 mt-2">{getPreview(blog.content)}</p>
+                <p className="text-sm text-gray-600 italic mt-2">
+                  Created on {new Date(blog.createdAt).toLocaleDateString()}
+                </p>
+                <div className="mt-4 flex space-x-4">
+                  <button
+                    onClick={() => navigate(`/edit/${blog._id}`)}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(blog._id)}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

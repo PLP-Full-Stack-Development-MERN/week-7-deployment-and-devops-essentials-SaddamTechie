@@ -12,7 +12,7 @@ function Home() {
       .catch(err => console.error(err));
   }, []);
 
-console.log("API_URL",API_URL)
+
   const getPreview = (content) => {
     const plainText = content.replace(/<[^>]+>/g, '');
     const words = plainText.split(/\s+/).filter(word => word.length > 0);

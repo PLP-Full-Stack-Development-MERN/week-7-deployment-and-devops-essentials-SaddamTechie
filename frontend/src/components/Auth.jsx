@@ -10,13 +10,13 @@ function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const { login } = useAuth();
   const navigate = useNavigate();
-  const API_URL = 'http://127.0.0.1:5000/api';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const endpoint = isLogin ? 'login' : 'register';
-      const res = await axios.post(`${API_URL}/${endpoint}`, { username, password });
+      const res = await axios.post(`${API_URL}/api/${endpoint}`, { username, password });
       if (isLogin) {
         login(res.data.token);
         navigate('/');

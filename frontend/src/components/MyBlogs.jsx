@@ -6,14 +6,14 @@ function MyBlogs() {
   const [blogs, setBlogs] = useState([]);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const API_URL = 'http://127.0.0.1:5000/api/my-blogs';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (!token) {
       navigate('/auth');
       return;
     }
-    axios.get(API_URL, { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API_URL}/api/my-blogs`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setBlogs(res.data))
       .catch(err => console.error(err));
   }, [token, navigate]);
@@ -29,7 +29,7 @@ function MyBlogs() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this blog?')) {
       try {
-        await axios.delete(`http://127.0.0.1:5000/api/blogs/${id}`, {
+        await axios.delete(`${API_URL}/api/blogs/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert('Done')

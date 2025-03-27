@@ -4,10 +4,10 @@ import axios from 'axios';
 
 function BlogList() {
   const [blogs, setBlogs] = useState([]);
-  const API_URL = 'http://127.0.0.1:5000/api/blogs';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    axios.get(API_URL)
+    axios.get(`${API_URL}/api/blogs`)
       .then(res => setBlogs(res.data))
       .catch(err => console.error(err));
   }, []);

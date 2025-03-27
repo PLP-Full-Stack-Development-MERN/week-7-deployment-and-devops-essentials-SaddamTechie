@@ -9,7 +9,7 @@ function BlogForm() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const API_URL = 'http://127.0.0.1:5000/api/blogs';
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem('token');
 
   if (!token){
@@ -18,7 +18,7 @@ function BlogForm() {
 
   useEffect(() => {
     if (id) {
-      axios.get(`${API_URL}/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+      axios.get(`${API_URL}/api/blogs/${id}`, { headers: { Authorization: `Bearer ${token}` } })
         .then(res => {
           setTitle(res.data.title);
           setContent(res.data.content);
@@ -32,9 +32,9 @@ function BlogForm() {
     const blogData = { title, content };
     try {
       if (id) {
-        await axios.put(`${API_URL}/${id}`, blogData, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.put(`${API_URL}/api/blogs/${id}`, blogData, { headers: { Authorization: `Bearer ${token}` } });
       } else {
-        await axios.post(API_URL, blogData, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post(`${API_URL}/api/blogs`, blogData, { headers: { Authorization: `Bearer ${token}` } });
       }
       navigate('/');
     } catch (err) {

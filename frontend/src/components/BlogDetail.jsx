@@ -10,12 +10,12 @@ function BlogDetail() {
   const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
   const [comment, setComment] = useState('');
-  const API_URL = `http://127.0.0.1:5000/api/blogs/${id}`;
+  const API_URL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem('token');
   const user = token ? jwtDecode(token) : null;
 
   useEffect(() => {
-    axios.get(API_URL)
+    axios.get(`${API_URL}/api/blogs/${id}`)
       .then(res => setBlog(res.data))
       .catch(err => console.error(err));
   }, [id]);
@@ -23,7 +23,7 @@ function BlogDetail() {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_URL}/comments`, { content: comment },
+      const res = await axios.post(`${API_URL}/api/blogs/${id}/comments`, { content: comment },
         { headers: { Authorization: `Bearer ${token}` } });
       setBlog(res.data);
       setComment('');
@@ -35,7 +35,7 @@ function BlogDetail() {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this blog?')) {
       try {
-        await axios.delete(API_URL, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.delete(`${API_URL}/api/blogs`, { headers: { Authorization: `Bearer ${token}` } });
         navigate('/');
       } catch (err) {
         console.error(err);

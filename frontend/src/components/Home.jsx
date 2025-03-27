@@ -4,13 +4,15 @@ import axios from 'axios';
 
 function Home() {
   const [blogs, setBlogs] = useState([]);
-  const API_URL = 'http://127.0.0.1:5000/api/blogs';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    axios.get(API_URL)
+    axios.get(`${API_URL}/api/blogs`)
       .then(res => setBlogs(res.data.slice(0, 3))) // Show only 3 blogs
       .catch(err => console.error(err));
   }, []);
+
+  console.log("API URL",);
 
   const getPreview = (content) => {
     const plainText = content.replace(/<[^>]+>/g, '');
